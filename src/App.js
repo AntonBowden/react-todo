@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
-import {TodoForm, TodoList} from './components/todo';
-import {addTodo, generateId, findById, toggleTodo, updateTodo} from './lib/todoHelpers';
+import React, { Component } from 'react'
+import logo from './logo.svg'
+import './App.css'
+import {TodoForm, TodoList} from './components/todo'
+import {addTodo, generateId, findById, toggleTodo, updateTodo} from './lib/todoHelpers'
+import {pipe, partial} from './lib/utils'
 
 class App extends Component {
   state = {
@@ -15,35 +16,34 @@ class App extends Component {
   }
 
   handleToggle = (id) => {
-    const todo = findById(id, this.state.todos)
-    const toggled = toggleTodo(todo)
-    const updatedTodos = updateTodo(this.state.todos, toggled)
+    const getUpdatedTodos = pipe(findById, toggleTodo, partial(updateTodo, this.state.todos))
+    const updatedTodos = getUpdatedTodos(id, this.state.todos)
     this.setState({todos: updatedTodos})
   }
 
   handleSubmit = (event) => {
-    event.preventDefault();
-    const newId = generateId();
+    event.preventDefault()
+    const newId = generateId()
     const newTodo = {id: newId, name: this.state.currentTodo, isComplete: false};
     const updatedTodos = addTodo(this.state.todos, newTodo);
     this.setState({
       todos: updatedTodos,
       currentTodo: '',
       errorMessage: ''
-    });
+    })
   }
 
   handleEmptySubmit = (event) => {
-    event.preventDefault();
+    event.preventDefault()
     this.setState({
       errorMessage: 'Please supply a todo name'
-    });
+    })
   }
 
   handleInputChange = (event) => {
     this.setState({
       currentTodo: event.target.value
-    });
+    })
   }
 
   render() {
@@ -62,8 +62,8 @@ class App extends Component {
           <TodoList handleToggle={this.handleToggle} todos={this.state.todos}/>
         </div>
       </div>
-    );
+    )
   }
 }
 
-export default App;
+export default App
